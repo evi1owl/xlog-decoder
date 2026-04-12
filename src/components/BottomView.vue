@@ -1,19 +1,18 @@
 <script setup lang="ts">
-
-import { invoke } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 
 const emits = defineEmits(["openPreference"]);
 
 const onTapSetting = () => {
-  emits("openPreference")
-}
+  emits("openPreference");
+};
 
 const onTapFolder = async () => {
   await invoke("show_in_folder", {
-    path: localStorage.getItem("dist"),
-    opening: true
-  })
-}
+    path: localStorage.getItem("dist") ?? "",
+    opening: true,
+  });
+};
 </script>
 
 <template>
@@ -27,7 +26,6 @@ const onTapFolder = async () => {
 </template>
 
 <style scoped lang="less">
-
 .bottom {
   width: 100%;
   height: 48px;
@@ -52,5 +50,4 @@ const onTapFolder = async () => {
     pointer-events: auto;
   }
 }
-
 </style>

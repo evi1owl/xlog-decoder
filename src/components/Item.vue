@@ -1,69 +1,69 @@
 <script setup lang="ts">
-
-import { ref, watch } from "vue"
-import { basename, join, resolveResource } from "@tauri-apps/api/path";
-import { invoke } from "@tauri-apps/api";
-import { createDir, exists } from "@tauri-apps/api/fs";
+import { ref, watch } from "vue";
+import { basename, join } from "@tauri-apps/api/path";
+import { invoke } from "@tauri-apps/api/core";
+import { exists, mkdir } from "@tauri-apps/plugin-fs";
 
 const props = defineProps({
   path: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
 /** resolved decode file path */
-const resolvedPath = ref("")
+const resolvedPath = ref("");
 /** decode file name */
-const name = ref("")
+const name = ref("");
 /** decode dist path */
-const dist = ref("")
+const dist = ref("");
 /** decode result, 0 is success */
-const status = ref(-1)
+const status = ref(-1);
 
-watch(() => props.path, async (newValue, _) => {
-  const xlogPath = await resolveResource(newValue!)
-  name.value = await basename(xlogPath)
-  resolvedPath.value = xlogPath
-  const code = await decode()
-  if (code !== 0) {
-    dist.value = ""
-  }
-  status.value = code
-
-}, {immediate: true})
+watch(
+  () => props.path,
+  async (newValue) => {
+    const xlogPath = newValue;
+    name.value = await basename(xlogPath);
+    resolvedPath.value = xlogPath;
+    const code = await decode();
+    if (code !== 0) {
+      dist.value = "";
+    }
+    status.value = code;
+  },
+  { immediate: true },
+);
 
 const decode = async (): Promise<number> => {
-  const customDistPath = localStorage.getItem("dist")
-  let distPath: string
-  if (!resolvedPath.value.endsWith(".xlog")) { // dir not support custom dist path
-    distPath = ""
-  } else if (customDistPath) { // custom dist path
-    if (!await exists(customDistPath)) {
-      await createDir(customDistPath)
+  const customDistPath = localStorage.getItem("dist");
+  let distPath: string;
+  if (!resolvedPath.value.endsWith(".xlog")) {
+    distPath = "";
+  } else if (customDistPath) {
+    if (!(await exists(customDistPath))) {
+      await mkdir(customDistPath, { recursive: true });
     }
-    distPath = await join(customDistPath, `${name.value}.log`)
-  } else { // default dist path
-    distPath = `${props.path}.log`
+    distPath = await join(customDistPath, `${name.value}.log`);
+  } else {
+    distPath = `${props.path}.log`;
   }
-  // preset, if decode failed, then clear
-  dist.value = distPath.length === 0 ? resolvedPath.value : distPath
+  dist.value = distPath.length === 0 ? resolvedPath.value : distPath;
   return await invoke("decode", {
     name: props.path,
     privateKey: localStorage.getItem("key") ?? "",
-    dist: distPath
-  })
-}
+    dist: distPath,
+  });
+};
 
 const showInFolder = async () => {
   if (status.value === 0) {
     await invoke("show_in_folder", {
       path: dist.value,
       opening: false,
-    })
+    });
   }
-}
-
+};
 </script>
 
 <template>

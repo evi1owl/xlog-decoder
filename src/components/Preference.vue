@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { open } from "@tauri-apps/api/dialog";
+import { open } from "@tauri-apps/plugin-dialog";
 
 const privateKey = ref(localStorage.getItem("key") ?? "");
 const distPath = ref(localStorage.getItem("dist") ?? "");
@@ -11,32 +11,30 @@ defineProps({
   show: {
     type: Boolean,
     required: false,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
 const done = () => {
-  localStorage.setItem("key", privateKey.value)
-  emits("done")
-}
+  localStorage.setItem("key", privateKey.value);
+  emits("done");
+};
 
 const showOpenDialog = async () => {
   const selected = await open({
     directory: true,
     multiple: false,
-  })
+  });
 
   if (Array.isArray(selected)) {
     // user selected multiple directories
   } else if (selected === null) {
     // user cancelled the selection
   } else {
-    // user selected a single directory
-    distPath.value = selected
-    localStorage.setItem("dist", selected)
+    distPath.value = selected;
+    localStorage.setItem("dist", selected);
   }
-}
-
+};
 </script>
 
 <template>
@@ -121,5 +119,4 @@ const showOpenDialog = async () => {
     background: gray;
   }
 }
-
 </style>
