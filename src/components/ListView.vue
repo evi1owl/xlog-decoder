@@ -16,7 +16,7 @@ defineProps({
   </div>
   <div v-else class="empty">
     <img src="@/assets/ic_empty.png" alt="" />
-    <p>Drag and drop the .xlog file here!</p>
+    <p>Drag and drop .xlog files here!</p>
   </div>
 </template>
 

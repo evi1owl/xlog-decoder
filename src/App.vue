@@ -16,8 +16,12 @@ onMounted(async () => {
   const win = getCurrentWindow();
   unlistenDragDrop = await win.onDragDropEvent((e: Event<DragDropEvent>) => {
     const p = e.payload;
-    if (p.type === "drop" && p.paths.length > 0) {
-      paths.value.push(p.paths[0]);
+    if (p.type === "drop") {
+      for (const filePath of p.paths) {
+        if (!paths.value.includes(filePath)) {
+          paths.value.push(filePath);
+        }
+      }
     }
   });
 });

@@ -41,7 +41,15 @@ fn show_in_folder(path: String, opening: bool) {
 
     #[cfg(target_os = "linux")]
     {
-        Command::new("nautilus").arg(&path).spawn().unwrap();
+        if opening {
+            Command::new("xdg-open").arg(&path).spawn().unwrap();
+        } else {
+            let parent = std::path::Path::new(&path)
+                .parent()
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or(path.clone());
+            Command::new("xdg-open").arg(&parent).spawn().unwrap();
+        }
     }
 
     #[cfg(target_os = "macos")]
