@@ -17,7 +17,7 @@ const onTapFolder = async () => {
 
 <template>
   <div class="bottom">
-    <p class="copyright">© evi1owl</p>
+    <p class="copyright">© baosong</p>
     <div>
       <img src="@/assets/ic_folder.png" alt="" @click="onTapFolder" />
       <img src="@/assets/ic_settings.png" alt="" @click="onTapSetting" />
